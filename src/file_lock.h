@@ -2,8 +2,12 @@
 #define FILE_LOCK_H
 #ifdef WIN32
 #include <windows.h>
+#else
+#include <sys/file.h>
+#include <unistd.h>
 #endif
 #include <napi.h>
+#include <iostream>
 
 class FileLock : public Napi::ObjectWrap<FileLock>
 {
@@ -21,13 +25,14 @@ public:
     Napi::Value GetFilePath(const Napi::CallbackInfo &info);
 
 private:
-    bool _locked;
-    std::string _filePath;
+    bool m_bLocked = false;
+    std::string m_sFilePath;
 
-#ifdef WIN32
-    HANDLE _hFile;
+#ifdef _WIN32
+    HANDLE m_hFileHandle;
+#else
+    int m_nFd;
 #endif
-
 };
 
 #endif

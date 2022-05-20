@@ -1,9 +1,9 @@
 {
     "targets": [
         {
-            "target_name": "fileLock",
-            "sources": ["./src/fileLock.cpp"],
-            "include_dirs": ["<!@(node -p \"require('node-addon-api').include\")"],
+            "target_name": "file_lock",
+            "sources": ["./src/file_lock.cpp"],
+            "include_dirs": ["<!@(node -p \"require('node-addon-api').include_dir\")"],
             "dependencies": ["<!(node -p \"require('node-addon-api').gyp\")"],
             'cflags!': ['-fno-exceptions'],
             'cflags_cc!': ['-fno-exceptions'],

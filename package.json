@@ -1,10 +1,11 @@
 {
-  "name": "file-lock",
+  "name": "@nshq/file-lock",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "./fileLock.js",
   "license": "MIT",
   "dependencies": {
     "bindings": "^1.5.0",
     "node-addon-api": "^5.0.0"
-  }
+  },
+  "gypfile": true
 }

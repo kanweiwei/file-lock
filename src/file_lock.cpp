@@ -1,31 +1,4 @@
-#include "fileLock.h"
-
-std::string UTF8_To_string(const std::string &str)
-{
-    int nwLen = MultiByteToWideChar(CP_UTF8, 0, str.c_str(), -1, NULL, 0);
-
-    wchar_t *pwBuf = new wchar_t[nwLen + 1];
-    memset(pwBuf, 0, nwLen * 2 + 2);
-
-    MultiByteToWideChar(CP_UTF8, 0, str.c_str(), str.length(), pwBuf, nwLen);
-
-    int nLen = WideCharToMultiByte(CP_ACP, 0, pwBuf, -1, NULL, NULL, NULL, NULL);
-
-    char *pBuf = new char[nLen + 1];
-    memset(pBuf, 0, nLen + 1);
-
-    WideCharToMultiByte(CP_ACP, 0, pwBuf, nwLen, pBuf, nLen, NULL, NULL);
-
-    std::string retStr = pBuf;
-
-    delete[] pBuf;
-    delete[] pwBuf;
-    pBuf = NULL;
-    pwBuf = NULL;
-
-    return retStr;
-}
-
+#include "file_lock.h"
 
 Napi::Object FileLock::Init(Napi::Env env, Napi::Object exports)
 {
@@ -48,16 +21,24 @@ Napi::Object FileLock::Init(Napi::Env env, Napi::Object exports)
 FileLock::FileLock(const Napi::CallbackInfo &info) : Napi::ObjectWrap<FileLock>(info)
 {
     Napi::String value = info[0].As<Napi::String>();
-    this->_filePath = value.Utf8Value();
+    this->m_sFilePath = value.Utf8Value();
 }
 
 FileLock::~FileLock()
 {
-#ifdef WIN32
-    this->_hFile = NULL;
+#ifdef _WIN32
+    if (this->m_bLocked && this->m_hFileHandle != NULL)
+    {
+        CloseHandle(this->m_hFileHandle);
+    }
+    this->m_hFileHandle = NULL;
+#else
+    if (this->m_bLocked && this->m_nFd)
+    {
+        close(this->m_nFd);
+    }
 #endif
-
-    this->_locked = false;
+    this->m_bLocked = false;
 }
 
 #ifdef WIN32
@@ -69,22 +50,30 @@ std::wstring s2ws(const std::string &s, bool isUtf8 = true)
     std::wstring buf;
     buf.resize(len);
     MultiByteToWideChar(isUtf8 ? CP_UTF8 : CP_ACP, 0, s.c_str(), slength,
-           const_cast<wchar_t *>(buf.c_str()), len);
+                        const_cast<wchar_t *>(buf.c_str()), len);
     return buf;
 }
 #endif
 
 Napi::Value FileLock::Lock(const Napi::CallbackInfo &info)
 {
-#ifdef WIN32
-    HANDLE hFile = CreateFileW(s2ws(this->_filePath).c_str(), GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+#ifdef _WIN32
+    HANDLE hFile = CreateFileW(s2ws(this->m_sFilePath).c_str(), GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
     if (hFile == INVALID_HANDLE_VALUE)
     {
         Napi::Error::New(info.Env(), "Failed to open file").ThrowAsJavaScriptException();
-        return info.Env().Undefined();
     }
-    this->_hFile = hFile;
-    this->_locked = true;
+    this->m_hFileHandle = hFile;
+    this->m_bLocked = true;
+    return Napi::Boolean::New(info.Env(), true);
+#else
+    int fd = open(this->m_sFilePath.c_str(), O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
+    int res = flock(fd, LOCK_EX);
+    if (res == -1)
+    {
+        Napi::Error::New(info.Env(), "Failed to open file").ThrowAsJavaScriptException();
+    }
+    this->m_bLocked = true;
     return Napi::Boolean::New(info.Env(), true);
 #endif
     return Napi::Boolean::New(info.Env(), false);
@@ -92,12 +81,20 @@ Napi::Value FileLock::Lock(const Napi::CallbackInfo &info)
 
 Napi::Value FileLock::Unlock(const Napi::CallbackInfo &info)
 {
-#ifdef WIN32
-    if (this->_hFile != NULL)
+#ifdef _WIN32
+    if (this->m_bLocked && this->m_hFileHandle != NULL)
     {
-        CloseHandle(this->_hFile);
-        this->_hFile = NULL;
+        CloseHandle(this->m_hFileHandle);
+        this->m_hFileHandle = NULL;
     }
+    this->m_bLocked = false;
+    return Napi::Boolean::New(info.Env(), true);
+#else
+    if (this->m_bLocked && this->m_nFd)
+    {
+        close(m_nFd);
+    }
+    this->m_bLocked = false;
     return Napi::Boolean::New(info.Env(), true);
 #endif
     return Napi::Boolean::New(info.Env(), false);
@@ -105,12 +102,12 @@ Napi::Value FileLock::Unlock(const Napi::CallbackInfo &info)
 
 Napi::Value FileLock::IsLocked(const Napi::CallbackInfo &info)
 {
-    return Napi::Boolean::New(info.Env(), this->_locked);
+    return Napi::Boolean::New(info.Env(), this->m_bLocked);
 }
 
 Napi::Value FileLock::GetFilePath(const Napi::CallbackInfo &info)
 {
-    return Napi::String::New(info.Env(), this->_filePath);
+    return Napi::String::New(info.Env(), this->m_sFilePath);
 }
 
 Napi::Object InitAll(Napi::Env env, Napi::Object exports)
