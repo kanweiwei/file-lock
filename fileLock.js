@@ -1,4 +1,4 @@
-const fileLock = require("bindings")({
+var fileLock = require("bindings")({
   try: [
     [
       "module_root",
@@ -8,35 +8,29 @@ const fileLock = require("bindings")({
       "Release",
       "bindings",
     ],
-    [
-      "module_root",
-      "build",
-      "Release",
-      "bindings",
-    ],
+    ["module_root", "build", "Release", "bindings"],
   ],
   bindings: "file_lock",
 }).FileLock;
-class FileLock {
-  constructor(filePath) {
-    this.fileLock = new fileLock(filePath);
-  }
 
-  lock() {
-    return this.fileLock.lock();
-  }
-
-  unlock() {
-    return this.fileLock.unlock();
-  }
-
-  isLocked() {
-    return this.fileLock.isLocked();
-  }
-
-  getFilePath() {
-    return this.fileLock.getFilePath();
-  }
+function FileLock() {
+  this.fileLock = new fileLock(filePath);
 }
+
+FileLock.prototype.lock = function () {
+  return this.fileLock.lock();
+};
+
+FileLock.prototype.unlock = function () {
+  return this.fileLock.unlock();
+};
+
+FileLock.prototype.isLocked = function () {
+  return this.fileLock.isLocked();
+};
+
+FileLock.prototype.getFilePath = function () {
+  return this.fileLock.getFilePath();
+};
 
 module.exports = FileLock;
