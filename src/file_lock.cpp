@@ -8,6 +8,7 @@ Napi::Object FileLock::Init(Napi::Env env, Napi::Object exports)
                                           InstanceMethod("unlock", &FileLock::Unlock),
                                           InstanceMethod("isLocked", &FileLock::IsLocked),
                                           InstanceMethod("getFilePath", &FileLock::GetFilePath),
+                                          InstanceMethod("setFilePath", &FileLock::SetFilePath),
                                       });
 
     Napi::FunctionReference *constructor = new Napi::FunctionReference();
@@ -108,6 +109,13 @@ Napi::Value FileLock::IsLocked(const Napi::CallbackInfo &info)
 Napi::Value FileLock::GetFilePath(const Napi::CallbackInfo &info)
 {
     return Napi::String::New(info.Env(), this->m_sFilePath);
+}
+
+Napi::Value FileLock::SetFilePath(const Napi::CallbackInfo &info)
+{
+    Napi::String value = info[0].As<Napi::String>();
+    this->m_sFilePath = value.Utf8Value();
+    return Napi::Boolean::New(info.Env(), true);
 }
 
 Napi::Object InitAll(Napi::Env env, Napi::Object exports)

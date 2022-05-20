@@ -13,7 +13,7 @@ var fileLock = require("bindings")({
   bindings: "file_lock",
 }).FileLock;
 
-function FileLock() {
+function FileLock(filePath) {
   this.fileLock = new fileLock(filePath);
 }
 
@@ -31,6 +31,13 @@ FileLock.prototype.isLocked = function () {
 
 FileLock.prototype.getFilePath = function () {
   return this.fileLock.getFilePath();
+};
+
+FileLock.prototype.setFilePath = function (filePath) {
+  if (this.fileLock.isLocked()) {
+    throw new Error("File is locked");
+  }
+  return this.fileLock.setFilePath(filePath);
 };
 
 module.exports = FileLock;

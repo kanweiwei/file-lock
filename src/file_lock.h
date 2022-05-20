@@ -23,6 +23,7 @@ public:
     Napi::Value Unlock(const Napi::CallbackInfo &info);
     Napi::Value IsLocked(const Napi::CallbackInfo &info);
     Napi::Value GetFilePath(const Napi::CallbackInfo &info);
+    Napi::Value SetFilePath(const Napi::CallbackInfo &info);
 
 private:
     bool m_bLocked = false;
