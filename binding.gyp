@@ -3,7 +3,7 @@
         {
             "target_name": "file_lock",
             "sources": ["./src/file_lock.cpp"],
-            "include_dirs": ["<!@(node -p \"require('node-addon-api').include_dir\")"],
+            "include_dirs": ["<!@(node -p \"require('node-addon-api').include\")"],
             "dependencies": ["<!(node -p \"require('node-addon-api').gyp\")"],
             'cflags!': ['-fno-exceptions'],
             'cflags_cc!': ['-fno-exceptions'],
