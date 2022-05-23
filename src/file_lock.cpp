@@ -36,6 +36,7 @@ FileLock::~FileLock()
 #else
     if (this->m_bLocked && this->m_nFd)
     {
+        flock(this->m_nFd, LOCK_UN);
         close(this->m_nFd);
     }
 #endif
@@ -72,9 +73,10 @@ Napi::Value FileLock::Lock(const Napi::CallbackInfo &info)
     int res = flock(fd, LOCK_EX);
     if (res == -1)
     {
-        Napi::Error::New(info.Env(), "Failed to open file").ThrowAsJavaScriptException();
+        Napi::Error::New(info.Env(), "Failed to lock file").ThrowAsJavaScriptException();
     }
     this->m_bLocked = true;
+    this->m_nFd = fd;
     return Napi::Boolean::New(info.Env(), true);
 #endif
     return Napi::Boolean::New(info.Env(), false);
@@ -93,6 +95,11 @@ Napi::Value FileLock::Unlock(const Napi::CallbackInfo &info)
 #else
     if (this->m_bLocked && this->m_nFd)
     {
+        int r = flock(this->m_nFd, LOCK_UN);
+        if (r == -1)
+        {
+            Napi::Error::New(info.Env(), "Failed to unlock file").ThrowAsJavaScriptException();
+        }
         close(m_nFd);
     }
     this->m_bLocked = false;
@@ -108,6 +115,10 @@ Napi::Value FileLock::IsLocked(const Napi::CallbackInfo &info)
 
 Napi::Value FileLock::GetFilePath(const Napi::CallbackInfo &info)
 {
+    if (this->m_sFilePath.empty())
+    {
+        return info.Env().Undefined();
+    }
     return Napi::String::New(info.Env(), this->m_sFilePath);
 }
 

@@ -1,18 +1,17 @@
 export = FileLock;
-declare function FileLock(filePath: string): void;
 export declare interface FileLock {
   lock: () => boolean;
   unlock: () => boolean;
   isLocked: () => boolean;
-  getFilePath: () => void;
+  getFilePath: () => string | undefined;
   setFilePath: (filePath: string) => boolean;
 }
-declare class FileLock {
-  constructor(filePath: string): void;
+export class FileLock {
+  constructor(filePath: string);
   fileLock: any;
   lock: () => boolean;
   unlock: () => boolean;
   isLocked: () => boolean;
-  getFilePath: () => void;
+  getFilePath: () => string | undefined;
   setFilePath: (filePath: string) => boolean;
 }
