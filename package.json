@@ -1,10 +1,23 @@
 {
   "name": "@nshq/file-lock",
   "version": "1.0.2",
-  "main": "./fileLock.js",
+  "main": "./lib/fileLock.js",
   "license": "MIT",
+  "scripts": {
+    "install": "node-pre-gyp install --fallback-to-build"
+  },
+  "binary": {
+    "module_name": "file_lock",
+    "module_path": "./lib/binding/napi-v{napi_build_version}-{platform}-{libc}-{arch}",
+    "host": "https://github.com/kanweiwei/file-lock/releases/download/",
+    "remote_path": "v{version}",
+    "package_name": "napi-v{napi_build_version}-{platform}-{libc}-{arch}.tar.gz",
+    "napi_versions": [
+      6
+    ]
+  },
   "dependencies": {
-    "bindings": "^1.5.0",
+    "@mapbox/node-pre-gyp": "^1.0.9",
     "node-addon-api": "^5.0.0"
   },
   "gypfile": true
