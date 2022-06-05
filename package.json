@@ -20,5 +20,8 @@
     "@mapbox/node-pre-gyp": "^1.0.9",
     "node-addon-api": "^5.0.0"
   },
-  "gypfile": true
+  "gypfile": true,
+  "devDependencies": {
+    "node-pre-gyp-github": "^1.4.4"
+  }
 }
