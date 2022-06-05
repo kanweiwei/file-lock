@@ -16,6 +16,10 @@
       6
     ]
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kanweiwei/file-lock.git"
+  },
   "dependencies": {
     "@mapbox/node-pre-gyp": "^1.0.9",
     "node-addon-api": "^5.0.0"
