@@ -3,3 +3,5 @@
 .idea
 .vscode
 /lib/binding
+/build-tmp-napi-v6
+/build-tmp-napi-v3
