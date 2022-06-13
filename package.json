@@ -1,6 +1,6 @@
 {
   "name": "@nshq/file-lock",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "main": "./lib/fileLock.js",
   "license": "MIT",
   "scripts": {
