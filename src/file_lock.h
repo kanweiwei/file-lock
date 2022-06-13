@@ -5,6 +5,7 @@
 #else
 #include <sys/file.h>
 #include <unistd.h>
+#include <fcntl.h>
 #endif
 #include <napi.h>
 #include <iostream>
