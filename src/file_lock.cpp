@@ -70,7 +70,7 @@ Napi::Value FileLock::Lock(const Napi::CallbackInfo &info)
     return Napi::Boolean::New(info.Env(), true);
 #else
     int fd = open(this->m_sFilePath.c_str(), O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
-    int res = flock(fd, LOCK_EX);
+    int res = flock(fd, LOCK_EX | LOCK_NB);
     if (res == -1)
     {
         Napi::Error::New(info.Env(), "Failed to lock file").ThrowAsJavaScriptException();
