@@ -143,3 +143,10 @@ jobs:
         if: matrix.node == 16 && startsWith(github.ref, 'refs/tags/')
         env:
           NODE_PRE_GYP_GITHUB_TOKEN: ${{ github.token }}
+
+      - name: Npm Publish
+        if: matrix.node == 16 && startsWith(github.ref, 'refs/tags/')
+        uses: JS-DevTools/npm-publish@v1
+        with:
+          token: ${{ secrets.NPM_TOKEN }}
+          access: public
