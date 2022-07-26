@@ -13,13 +13,13 @@
 # Install Package
 
 ```bash
-yarn add @nshq/file-lock
+yarn add @camol/file-lock
 ```
 
 # Usage
 
 ```javascript
-const FileLock = require("@nshq/file-lock");
+const FileLock = require("@camol/file-lock");
 
 const filePath = "/tmp/xxx";
 const fileLock = new FileLock(filePath);
