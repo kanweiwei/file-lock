@@ -64,6 +64,7 @@ Napi::Value FileLock::Lock(const Napi::CallbackInfo &info)
     if (hFile == INVALID_HANDLE_VALUE)
     {
         Napi::Error::New(info.Env(), "Failed to open file").ThrowAsJavaScriptException();
+        return Napi::Boolean::New(info.Env(), false);
     }
     this->m_hFileHandle = hFile;
     this->m_bLocked = true;
@@ -74,6 +75,7 @@ Napi::Value FileLock::Lock(const Napi::CallbackInfo &info)
     if (res == -1)
     {
         Napi::Error::New(info.Env(), "Failed to lock file").ThrowAsJavaScriptException();
+        return Napi::Boolean::New(info.Env(), false);
     }
     this->m_bLocked = true;
     this->m_nFd = fd;
@@ -99,6 +101,7 @@ Napi::Value FileLock::Unlock(const Napi::CallbackInfo &info)
         if (r == -1)
         {
             Napi::Error::New(info.Env(), "Failed to unlock file").ThrowAsJavaScriptException();
+            return Napi::Boolean::New(info.Env(), false);
         }
         close(m_nFd);
     }
