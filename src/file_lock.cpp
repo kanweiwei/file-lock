@@ -63,7 +63,8 @@ Napi::Value FileLock::Lock(const Napi::CallbackInfo &info)
     HANDLE hFile = CreateFileW(s2ws(this->m_sFilePath).c_str(), GENERIC_READ, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
     if (hFile == INVALID_HANDLE_VALUE)
     {
-        Napi::Error::New(info.Env(), "Failed to open file").ThrowAsJavaScriptException();
+        int errCode = GetLastError();
+        Napi::Error::New(info.Env(), "[" + std::to_string(errCode) + "]" + "Failed to open file").ThrowAsJavaScriptException();
         return Napi::Boolean::New(info.Env(), false);
     }
     this->m_hFileHandle = hFile;
