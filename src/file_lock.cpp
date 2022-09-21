@@ -60,7 +60,7 @@ std::wstring s2ws(const std::string &s, bool isUtf8 = true)
 Napi::Value FileLock::Lock(const Napi::CallbackInfo &info)
 {
 #ifdef _WIN32
-    HANDLE hFile = CreateFileW(s2ws(this->m_sFilePath).c_str(), GENERIC_WRITE, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+    HANDLE hFile = CreateFileW(s2ws(this->m_sFilePath).c_str(), GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
     if (hFile == INVALID_HANDLE_VALUE)
     {
         int errCode = GetLastError();
